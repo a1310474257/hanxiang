@@ -36,7 +36,7 @@ public class ExceptionCatch {
   @ResponseBody
   public ResponseResult SystemException(HttpServletRequest request, Exception e) throws IOException {
     System.out.println(request.getRequestURI()+" "+request.getParameter("a"));
-    //获取请求体中的参数
+    //获取请求体中 的参数
     Map<String, String> parameterByHttpServletRequest = getParameterByHttpServletRequest(request);
     System.out.println(parameterByHttpServletRequest);
     ResponseResult responseResult = new ResponseResult(CommonCode.SYSTEMERROR);

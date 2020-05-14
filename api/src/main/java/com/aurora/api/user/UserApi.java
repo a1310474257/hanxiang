@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Api(value = "用户管理接口",description = "提供增删查改")
@@ -16,5 +17,8 @@ public interface UserApi {
    * @return
    */
   public QueryResponseResult finAll(String token, Integer adminId, HttpServletRequest request, int pageNumber, int pageSize);
+
+
+  public QueryResponseResult findOneById(String token, Integer userId, HttpServletRequest request, HttpServletResponse response);
 
 }

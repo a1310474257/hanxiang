@@ -61,6 +61,10 @@ public class TokenAuthentication{
     }
     if(adminId!=null&& StringUtils.isNotEmpty(token)){
       AdminToken adminToken = adminTokenDao.findOneByAdminId(adminId);
+      if(adminToken==null){
+        return false;
+      }
+      //主要核心
       if (adminToken.getToken().equals(token)){
         //验证token是否过期
         return true;
@@ -69,5 +73,27 @@ public class TokenAuthentication{
     }
 
     return  false;
+  }
+
+  /**
+   * 验证token
+   * @param id
+   * @param token
+   * @param isUser
+   * @return
+   */
+  public boolean Validation(Integer id ,String token,Integer isUser){
+    if(isUser==null){
+      return false;
+    }
+    //是管理员
+    if (isUser==1){
+      return ValidationAdmin(id,token);
+    }
+    //是用户
+    if(isUser==0){
+      return ValidationUser(id,token);
+    }
+    return false;
   }
 }

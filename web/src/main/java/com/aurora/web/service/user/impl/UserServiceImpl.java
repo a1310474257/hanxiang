@@ -35,4 +35,16 @@ public class UserServiceImpl implements UserService {
     PageInfo<User> userPageInfo = new PageInfo<>(users);
     return userPageInfo;
   }
+
+  /**
+   * 根据id查找用户
+   * @param id
+   * @return
+   */
+  @Override
+  public User findOneById(Integer id) {
+    return userDao.findOneById(id);
+  }
+
+
 }

@@ -30,4 +30,18 @@ public interface UserDao {
   @Select("select id,account_number,phonenumber,birthday,password,imageurl,name,nickname,openid from user_user")
   public List<User> finAll();
 
+  @Results({
+          @Result(id=true,property = "id",column = "id"),
+          @Result(property = "account_number",column = "account_number"),
+          @Result(property = "phonenumber",column = "phonenumber"),
+          @Result(property = "birthday",column = "birthday"),
+          @Result(property = "password",column = "password"),
+          @Result(property = "imageurl",column = "imageurl"),
+          @Result(property = "name",column = "name"),
+          @Result(property = "nickname",column = "nickname"),
+          @Result(property = "openid",column = "openid"),
+          @Result(property = "account",column = "id",javaType = Account.class,one = @One(select = "com.aurora.web.dao.account.AccountDao.findOneByUserId"))
+  })
+  @Select("select id,account_number,phonenumber,birthday,password,imageurl,name,nickname,openid from user_user where id = #{id}")
+  public User findOneById(Integer id);
 }

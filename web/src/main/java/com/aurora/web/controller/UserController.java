@@ -8,6 +8,7 @@ import com.aurora.result.ResultCode;
 import com.aurora.result.response.query.QueryResponseResult;
 import com.aurora.result.resultCodeImpl.CommonCode;
 import com.aurora.result.resultCodeImpl.SecutiryCode;
+import com.aurora.web.service.log.LogService;
 import com.aurora.web.service.security.verification.IPAuthentication;
 import com.aurora.web.service.security.verification.TokenAuthentication;
 import com.aurora.web.service.user.UserService;
@@ -21,7 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/user")
@@ -30,13 +33,17 @@ public class UserController implements UserApi {
 
 
   @Autowired
-  private UserService service;
+  private UserService userService;
 
   @Autowired
   private IPAuthentication ipAuthentication;
 
   @Autowired
   private TokenAuthentication tokenAuthentication;
+
+  @Autowired
+  private LogService logService;
+
   @ApiImplicitParams({
     @ApiImplicitParam(name="adminId",value = "管理员id",required=true,example = "1"),
     @ApiImplicitParam(name="token",value = "token",required=true,example = "11231"),
@@ -47,7 +54,7 @@ public class UserController implements UserApi {
   @ApiOperation("查询所有用户")
   @GetMapping("/findAll")
   public QueryResponseResult finAll(@RequestParam("token") String token, @RequestParam("adminId") Integer adminId, HttpServletRequest request, @RequestParam("pageNumber") int pageNumber, @RequestParam("pageSize") int pageSize) {
-    //1、验证IP地址是否为本机地址
+    //1、验证IP地址是否合法
     boolean authenticationIPAddress = ipAuthentication.AuthenticationIPAddress(request);
     if(!authenticationIPAddress){
       ExceptionCast.CommomException(SecutiryCode.IP_WRONG);
@@ -58,12 +65,44 @@ public class UserController implements UserApi {
       ExceptionCast.CommomException(SecutiryCode.TOKEN_ISNOT_VAILD);
     }
     //3、获取数据
-    PageInfo<User> userPageInfo = service.finAll(pageNumber,pageSize);
+    PageInfo<User> userPageInfo = userService.finAll(pageNumber,pageSize);
     if(userPageInfo==null){
       ExceptionCast.CommomException(CommonCode.RESULT_IS_NULL);
     }
-    List<User> list = userPageInfo.getList();
-    QueryResponseResult queryResponseResult = new QueryResponseResult(CommonCode.SUCCESS,list,userPageInfo.getTotal());
+    QueryResponseResult queryResponseResult = new QueryResponseResult(CommonCode.SUCCESS,userPageInfo);
+    //4、存入日记
+
     return queryResponseResult;
   }
+
+  @ApiImplicitParams({
+          @ApiImplicitParam(name="token",value = "token",required=true,example = "11231"),
+          @ApiImplicitParam(name="userId",value = "用户id",required=true,example = "2"),
+  })
+  @ApiOperation("根据id查询用户")
+  @GetMapping("/findOneById")
+  @Override
+  public QueryResponseResult findOneById(@RequestParam("token") String token, @RequestParam("userId") Integer userId, HttpServletRequest request, HttpServletResponse response) {
+    //1、验证IP地址是否合法
+    boolean authenticationIPAddress = ipAuthentication.AuthenticationIPAddress(request);
+    if(!authenticationIPAddress){
+      ExceptionCast.CommomException(SecutiryCode.IP_WRONG);
+    }
+    //2、验证token
+    boolean validationAdmin = tokenAuthentication.ValidationUser(userId, token);
+    if(!validationAdmin){
+      ExceptionCast.CommomException(SecutiryCode.TOKEN_ISNOT_VAILD);
+    }
+    //3、获取数据
+    User oneById = userService.findOneById(userId);
+    if(oneById==null){
+      ExceptionCast.CommomException(CommonCode.RESULT_IS_NULL);
+    }
+    QueryResponseResult queryResponseResult = new QueryResponseResult(CommonCode.SUCCESS,oneById);
+    //4、存入日记
+    logService.recordInfo(userId, "findOneById");
+    return queryResponseResult;
+  }
+
+
 }

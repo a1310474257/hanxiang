@@ -10,4 +10,5 @@ import java.util.List;
 
 public interface UserService {
   public PageInfo<User> finAll(int pageNumber, int pageSize);
+  public User findOneById(Integer id);
 }

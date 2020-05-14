@@ -15,6 +15,7 @@ public class SwaggerConfig {
 
   @Bean
   public Docket swaggerSpringMvcPlugin() {
+
     return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class)).build();
   }
 }

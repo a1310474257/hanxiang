@@ -1,7 +1,10 @@
 package com.aurora.api.user;
 
 import com.aurora.entity.account.Account;
+import com.aurora.result.response.query.QueryResponseResult;
 import io.swagger.annotations.Api;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Api(value = "账户管理接口",description = "提供增删查改")
 public interface AccountApi {
@@ -10,6 +13,6 @@ public interface AccountApi {
    * @param Id
    * @return
    */
-  public Account findOneByUserId(Integer Id ,String token,Integer isUser);
+  public QueryResponseResult findOneByUserId(Integer Id , String token, Integer isUser, HttpServletRequest request);
 
 }
